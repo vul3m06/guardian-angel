@@ -1,0 +1,14 @@
+{
+  "name": "呼喚守護天使",
+  "short_name": "守護天使",
+  "description": "輸入日期、時間與主題，讓天使數字為你傳遞專屬的祝福與指引。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d0d14",
+  "theme_color": "#0d0d14",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

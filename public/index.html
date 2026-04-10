@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>呼喚守護天使</title>
+  <meta name="description" content="輸入日期、時間與主題，讓天使數字為你傳遞專屬的祝福與指引。" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0d0d14" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="守護天使" />
+  <link rel="apple-touch-icon" href="/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#0d0d14; --bg2:#13131e; --bg3:#1a1a28;
+      --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.15);
+      --text:#f0ede8; --text2:rgba(240,237,232,0.7); --text3:rgba(240,237,232,0.4);
+      --gold:#c9a96e; --gold2:rgba(201,169,110,0.12);
+      --radius:12px; --radius-sm:8px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Noto Serif TC',serif;overscroll-behavior:none}
+    body{display:flex;flex-direction:column;align-items:center;padding:0 0 4rem}
+    #canvas{position:fixed;inset:0;pointer-events:none;z-index:0}
+    .app{position:relative;z-index:1;width:100%;max-width:480px;padding:3rem 1.5rem 2rem;display:flex;flex-direction:column;gap:1rem}
+    .header{text-align:center;margin-bottom:0.5rem}
+    .header-en{font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic;font-weight:300;letter-spacing:0.3em;color:var(--gold);opacity:0.8;margin-bottom:0.5rem}
+    .header-zh{font-size:28px;font-weight:500;letter-spacing:0.15em;color:var(--text);margin-bottom:0.75rem}
+    .header-rule{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:0.6rem}
+    .hrl{width:60px;height:0.5px;background:var(--gold);opacity:0.25}
+    .hrd{width:5px;height:5px;border:0.5px solid var(--gold);transform:rotate(45deg);opacity:0.55}
+    .header-sub{font-size:13px;color:var(--text2);letter-spacing:0.1em}
+    .card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:1.1rem}
+    .card-label{font-size:12px;color:var(--text3);letter-spacing:0.2em;margin-bottom:0.7rem;text-align:center}
+    .dt-row{display:flex;gap:8px;align-items:center}
+    input[type="date"],input[type="time"]{flex:1;height:48px;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'Cormorant Garamond',serif;font-size:19px;text-align:center;padding:0 8px;outline:none;-webkit-appearance:none;transition:border-color 0.2s}
+    input[type="date"]:focus,input[type="time"]:focus{border-color:var(--border2)}
+    input[type="date"]::-webkit-calendar-picker-indicator,input[type="time"]::-webkit-calendar-picker-indicator{filter:invert(0.55);cursor:pointer}
+    .now-btn{height:48px;padding:0 14px;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-family:'Noto Serif TC',serif;font-size:13px;letter-spacing:0.05em;cursor:pointer;white-space:nowrap;transition:all 0.2s}
+    .now-btn:hover{border-color:var(--border2);color:var(--text)}
+    .theme-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+    .theme-btn{height:64px;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);font-family:'Noto Serif TC',serif;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:all 0.2s;position:relative;overflow:hidden}
+    .theme-btn::before{content:'';position:absolute;inset:0;background:var(--gold2);opacity:0;transition:opacity 0.2s}
+    .theme-btn:hover::before{opacity:1}
+    .theme-btn:hover{border-color:rgba(201,169,110,0.4)}
+    .theme-btn:active{transform:scale(0.95)}
+    .theme-btn .t-icon{font-size:16px;line-height:1;color:var(--text3);position:relative;z-index:1;transition:color 0.2s}
+    .theme-btn .t-name{font-size:13px;letter-spacing:0.05em;position:relative;z-index:1;color:var(--text);font-weight:400}
+    .theme-btn:hover .t-icon{color:var(--gold)}
+    .ad-btn{height:64px;background:var(--bg3);border:0.5px solid rgba(201,169,110,0.35);border-radius:var(--radius-sm);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:all 0.2s;text-decoration:none;position:relative;overflow:hidden}
+    .ad-btn::before{content:'';position:absolute;inset:0;background:var(--gold2);opacity:0;transition:opacity 0.2s}
+    .ad-btn:hover::before{opacity:1}
+    .ad-btn:hover{border-color:rgba(201,169,110,0.7)}
+    .ad-btn .t-icon{font-size:16px;color:var(--gold);position:relative;z-index:1}
+    .ad-btn .t-name{font-size:13px;letter-spacing:0.04em;color:var(--gold);position:relative;z-index:1}
+    .numbers-row{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;padding:0.25rem 0 0.75rem}
+    .num-pill{width:34px;height:34px;border-radius:50%;border:0.5px solid rgba(201,169,110,0.35);background:var(--bg2);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gold);opacity:0;animation:popIn 0.3s ease forwards}
+    @keyframes popIn{from{opacity:0;transform:scale(0.6) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    .result-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;opacity:0;animation:fadeUp 0.5s ease 0.1s forwards}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .result-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.2rem}
+    .result-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;letter-spacing:0.2em;color:var(--gold)}
+    .result-theme-tag{font-size:12px;letter-spacing:0.12em;color:var(--gold);border:0.5px solid rgba(201,169,110,0.45);border-radius:20px;padding:3px 10px;margin-top:5px}
+    .result-names{font-size:12px;color:var(--text3);letter-spacing:0.1em;margin-bottom:0.2rem}
+    .result-date{font-size:12px;color:var(--text3);letter-spacing:0.08em;margin-bottom:1.1rem}
+    .result-divider{height:0.5px;background:var(--border);margin-bottom:1.25rem}
+    .blessing-block{display:flex;flex-direction:column;gap:1.1rem}
+    .blessing-text{font-size:17px;line-height:2;color:var(--text);letter-spacing:0.05em;display:block}
+    .ai-tag{display:flex;align-items:center;gap:6px;margin-top:1.1rem;padding-top:0.9rem;border-top:0.5px solid var(--border);font-size:12px;color:var(--text3);letter-spacing:0.1em}
+    .ai-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:pulse 2s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:0.3}50%{opacity:1}}
+    .loading-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center}
+    .loading-text{font-size:14px;color:var(--text2);letter-spacing:0.15em}
+    .loading-text::after{content:'';animation:dots 1.4s infinite}
+    @keyframes dots{0%{content:''}25%{content:'．'}50%{content:'．．'}75%{content:'．．．'}100%{content:''}}
+    .error-text{text-align:center;font-size:14px;color:var(--text2);padding:1.5rem;letter-spacing:0.08em}
+    .footer{text-align:center;font-size:12px;color:var(--text3);letter-spacing:0.1em;margin-top:0.5rem}
+    @supports (padding-bottom:env(safe-area-inset-bottom)){body{padding-bottom:calc(4rem + env(safe-area-inset-bottom))}}
+  </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<div class="app">
+  <div class="header">
+    <div class="header-en">Invoke Your Guardian Angel</div>
+    <div class="header-zh">呼喚守護天使</div>
+    <div class="header-rule"><div class="hrl"></div><div class="hrd"></div><div class="hrl"></div></div>
+    <div class="header-sub">選擇主題，天使立即為你傳遞訊息</div>
+  </div>
+  <div class="card">
+    <div class="card-label">日期與時間（可自行修改）</div>
+    <div class="dt-row">
+      <input type="date" id="dateInput" />
+      <input type="time" id="timeInput" />
+      <button class="now-btn" onclick="setNow()">現在</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-label">點選主題，天使立即回應</div>
+    <div class="theme-grid">
+      <button class="theme-btn" data-theme="愛情" data-desc="愛情、感情關係、伴侶連結，或吸引真愛的能量" onclick="invoke(this)">
+        <span class="t-icon">♡</span><span class="t-name">愛情</span>
+      </button>
+      <button class="theme-btn" data-theme="事業" data-desc="工作、事業發展、職涯方向，或達成目標的力量" onclick="invoke(this)">
+        <span class="t-icon">◈</span><span class="t-name">事業</span>
+      </button>
+      <button class="theme-btn" data-theme="財運" data-desc="金錢、財富流動、豐盛吸引力，或物質層面的豐足" onclick="invoke(this)">
+        <span class="t-icon">◉</span><span class="t-name">財運</span>
+      </button>
+      <button class="theme-btn" data-theme="健康" data-desc="身心健康、生命力、自我照顧，或療癒與活力的能量" onclick="invoke(this)">
+        <span class="t-icon">◎</span><span class="t-name">健康</span>
+      </button>
+      <button class="theme-btn" data-theme="人際" data-desc="人際關係、貴人緣分、社交互動，或與他人的和諧連結" onclick="invoke(this)">
+        <span class="t-icon">◇</span><span class="t-name">人際</span>
+      </button>
+      <button class="theme-btn" data-theme="靈性成長" data-desc="靈性覺醒、內在成長、直覺開發，或與更高自我的連結" onclick="invoke(this)">
+        <span class="t-icon">△</span><span class="t-name">靈性</span>
+      </button>
+      <button class="theme-btn" data-theme="整體運勢" data-desc="今日整體運勢走向、能量高低與行動建議" onclick="invoke(this)">
+        <span class="t-icon">☽</span><span class="t-name">今日運勢</span>
+      </button>
+      <a class="ad-btn" href="https://landtarot.wixsite.com/website" target="_blank">
+        <span class="t-icon">✦</span><span class="t-name">關於心流花園</span>
+      </a>
+    </div>
+  </div>
+  <div id="output"></div>
+  <div class="footer">守護天使正在聆聽你的呼喚</div>
+</div>
+<script>
+const A={0:{name:"完整",desc:"象徵圓滿與無限可能，宇宙源頭的完整能量"},1:{name:"領袖",desc:"代表新起點與獨立創造，引領方向的開創力量"},2:{name:"和平",desc:"象徵平衡與合作，溫柔包容的和諧能量"},3:{name:"創意",desc:"代表創意表達與喜悅，豐富想像與溝通天賦"},4:{name:"穩健",desc:"象徵踏實與秩序，耐心建構美好未來的毅力"},5:{name:"自由",desc:"代表自由與變化，勇於探索的冒險靈魂"},6:{name:"關愛",desc:"象徵愛與責任，溫暖療癒他人的深厚關懷"},7:{name:"智慧",desc:"代表靈性智慧，深刻洞察宇宙真理的內在力量"},8:{name:"豐盛",desc:"象徵物質與精神豐盛，實現目標的強大意志"},9:{name:"圓滿",desc:"代表完結與蛻變，寬廣慈悲與人生智慧的圓滿"}};
+let busy=false;
+function setNow(){const n=new Date();document.getElementById('dateInput').value=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;document.getElementById('timeInput').value=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;}
+async function invoke(btn){
+  if(busy)return;
+  let dv=document.getElementById('dateInput').value,tv=document.getElementById('timeInput').value;
+  if(!dv||!tv){setNow();dv=document.getElementById('dateInput').value;tv=document.getElementById('timeInput').value;}
+  const theme=btn.dataset.theme,themeDesc=btn.dataset.desc;
+  const[y,mo,d]=dv.split('-'),[h,mi]=tv.split(':');
+  const digits=(y+mo+d+h+mi).split('').map(Number);
+  const angelNum=digits.join('');
+  const digitNames=digits.map(n=>A[n]?.name||n).join(' · ');
+  const digitDescs=digits.map(n=>`數字${n}（${A[n]?.name}：${A[n]?.desc}）`).join('、');
+  const dateLabel=`${y}年${parseInt(mo)}月${parseInt(d)}日 ${h}:${mi}`;
+  document.querySelectorAll('.theme-btn').forEach(b=>{b.style.opacity='0.4';b.style.pointerEvents='none';});
+  btn.style.opacity='1';busy=true;
+  document.getElementById('output').innerHTML=`
+    <div class="numbers-row">${digits.map((n,i)=>`<div class="num-pill" style="animation-delay:${i*0.035}s">${n}</div>`).join('')}</div>
+    <div class="loading-card"><div class="loading-text">天使正在解讀【${theme}】的訊息</div></div>`;
+  try{
+    const resp=await fetch('/api/blessing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({angelNum,digitDescs,dateLabel,digitNames,theme,themeDesc})});
+    const data=await resp.json();
+    if(!data.blessing)throw new Error('empty');
+    const lines=data.blessing.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+    const blessingHTML=lines.slice(0,5).map(line=>`<span class="blessing-text">${line}</span>`).join('');
+    document.getElementById('output').innerHTML=`
+      <div class="numbers-row">${digits.map((n,i)=>`<div class="num-pill" style="animation-delay:${i*0.035}s">${n}</div>`).join('')}</div>
+      <div class="result-card">
+        <div class="result-top"><div class="result-num">${angelNum}</div><div class="result-theme-tag">${theme}</div></div>
+        <div class="result-names">${digitNames}</div>
+        <div class="result-date">${dateLabel}</div>
+        <div class="result-divider"></div>
+        <div class="blessing-block">${blessingHTML}</div>
+        <div class="ai-tag"><div class="ai-dot"></div><span>由守護天使即時傳遞</span></div>
+      </div>`;
+  }catch(e){document.getElementById('output').innerHTML='<div class="error-text">天使暫時無法回應，請稍後再試。</div>';}
+  document.querySelectorAll('.theme-btn').forEach(b=>{b.style.opacity='';b.style.pointerEvents='';});
+  busy=false;
+}
+(function(){const canvas=document.getElementById('canvas');const ctx=canvas.getContext('2d');let stars=[];function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}function initStars(){stars=[];for(let i=0;i<120;i++){stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.2+0.2,speed:Math.random()*0.003+0.001,phase:Math.random()*Math.PI*2});}}function draw(t){ctx.clearRect(0,0,canvas.width,canvas.height);stars.forEach(s=>{const alpha=(Math.sin(t*s.speed*1000+s.phase)+1)/2*0.45+0.05;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(201,169,110,${alpha})`;ctx.fill();});requestAnimationFrame(draw);}window.addEventListener('resize',()=>{resize();initStars();});resize();initStars();requestAnimationFrame(draw);})();
+setNow();
+</script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}</script>
+</body>
+</html>
