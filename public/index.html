@@ -56,7 +56,7 @@
     .ad-btn:hover::before{opacity:1}
     .ad-btn:hover{border-color:rgba(201,169,110,0.7)}
     .ad-btn .t-icon{font-size:16px;color:var(--gold);position:relative;z-index:1}
-    .ad-btn .t-name{font-size:13px;letter-spacing:0.04em;color:var(--gold);position:relative;z-index:1}
+    .ad-btn .t-name{font-size:11px;letter-spacing:0.02em;color:var(--gold);position:relative;z-index:1;white-space:nowrap}
     .numbers-row{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;padding:0.25rem 0 0.75rem}
     .num-pill{width:34px;height:34px;border-radius:50%;border:0.5px solid rgba(201,169,110,0.35);background:var(--bg2);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gold);opacity:0;animation:popIn 0.3s ease forwards}
     @keyframes popIn{from{opacity:0;transform:scale(0.6) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
@@ -174,6 +174,4 @@ async function invoke(btn){
 (function(){const canvas=document.getElementById('canvas');const ctx=canvas.getContext('2d');let stars=[];function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}function initStars(){stars=[];for(let i=0;i<120;i++){stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.2+0.2,speed:Math.random()*0.003+0.001,phase:Math.random()*Math.PI*2});}}function draw(t){ctx.clearRect(0,0,canvas.width,canvas.height);stars.forEach(s=>{const alpha=(Math.sin(t*s.speed*1000+s.phase)+1)/2*0.45+0.05;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(201,169,110,${alpha})`;ctx.fill();});requestAnimationFrame(draw);}window.addEventListener('resize',()=>{resize();initStars();});resize();initStars();requestAnimationFrame(draw);})();
 setNow();
 </script>
-<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}</script>
-</body>
-</html>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}</scrip
