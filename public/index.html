@@ -51,7 +51,7 @@
     .theme-btn .t-icon{font-size:16px;line-height:1;color:var(--text3);position:relative;z-index:1;transition:color 0.2s}
     .theme-btn .t-name{font-size:13px;letter-spacing:0.05em;position:relative;z-index:1;color:var(--text);font-weight:400}
     .theme-btn:hover .t-icon{color:var(--gold)}
-    .ad-btn{height:64px;background:var(--bg3);border:0.5px solid rgba(201,169,110,0.35);border-radius:var(--radius-sm);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:all 0.2s;text-decoration:none;position:relative;overflow:hidden}
+    .ad-btn{height:64px;background:var(--bg3);border:0.5px solid rgba(201,169,110,0.35);border-radius:var(--radius-sm);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:all 0.2s;text-decoration:none;position:relative;overflow:hidden;grid-column:span 2;}
     .ad-btn::before{content:'';position:absolute;inset:0;background:var(--gold2);opacity:0;transition:opacity 0.2s}
     .ad-btn:hover::before{opacity:1}
     .ad-btn:hover{border-color:rgba(201,169,110,0.7)}
@@ -174,4 +174,6 @@ async function invoke(btn){
 (function(){const canvas=document.getElementById('canvas');const ctx=canvas.getContext('2d');let stars=[];function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}function initStars(){stars=[];for(let i=0;i<120;i++){stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.2+0.2,speed:Math.random()*0.003+0.001,phase:Math.random()*Math.PI*2});}}function draw(t){ctx.clearRect(0,0,canvas.width,canvas.height);stars.forEach(s=>{const alpha=(Math.sin(t*s.speed*1000+s.phase)+1)/2*0.45+0.05;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(201,169,110,${alpha})`;ctx.fill();});requestAnimationFrame(draw);}window.addEventListener('resize',()=>{resize();initStars();});resize();initStars();requestAnimationFrame(draw);})();
 setNow();
 </script>
-<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}</scrip
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}</script>
+</body>
+</html>
